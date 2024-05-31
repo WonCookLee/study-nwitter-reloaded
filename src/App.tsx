@@ -4,10 +4,12 @@ import Layout from "./components/layout";
 import Profile from "./routes/profile";
 import Login from "./routes/login";
 import CreateAocunt from "./routes/create-aocunt";
-import { createGlobalStyle } from "styled-components";
+import styled, { createGlobalStyle } from "styled-components";
 import reset from "styled-reset";
 import { useEffect, useState } from "react";
 import LoadingScrean from "./components/loading-screan";
+import { auth } from "./firebase";
+import ProtectedRoute from "./routes/protected-route";
 
 const GlobalStyles = createGlobalStyle`
   ${reset};
@@ -21,19 +23,24 @@ const GlobalStyles = createGlobalStyle`
   }
 `;
 
+const Wrapper = styled.div`
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+`;
+
 function App() {
   const [isLoading, setLoading] = useState(true);
   const init = async () => {
-    setTimeout(() => {
-      setLoading(false);
-    }, 1000);
+    await auth.authStateReady();
+    setLoading(false);
   };
   useEffect(() => {
     init();
   }, []);
 
   return (
-    <>
+    <Wrapper>
       <GlobalStyles />
       {isLoading ? (
         <LoadingScrean />
@@ -42,7 +49,11 @@ function App() {
           router={createBrowserRouter([
             {
               path: "/",
-              element: <Layout />,
+              element: (
+                <ProtectedRoute>
+                  <Layout />
+                </ProtectedRoute>
+              ),
               children: [
                 {
                   path: "",
@@ -65,7 +76,7 @@ function App() {
           ])}
         />
       )}
-    </>
+    </Wrapper>
   );
 }
 
