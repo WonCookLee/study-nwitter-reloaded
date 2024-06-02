@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import LoadingScrean from "./components/loading-screan";
 import { auth } from "./firebase";
 import ProtectedRoute from "./routes/protected-route";
+import FindAccountPassword from "./routes/find-acount-password";
 
 const GlobalStyles = createGlobalStyle`
   ${reset};
@@ -72,6 +73,10 @@ function App() {
             {
               path: "/create-acount",
               element: <CreateAocunt />,
+            },
+            {
+              path: "/find-acount-password",
+              element: <FindAccountPassword />,
             },
           ])}
         />

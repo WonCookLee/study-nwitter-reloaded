@@ -1,5 +1,8 @@
 import { FirebaseError } from "firebase/app";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import {
+  sendPasswordResetEmail,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
@@ -44,11 +47,10 @@ const Input = styled.input`
   }
 `;
 
-const Login = () => {
+const FindAccountPassword = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
-    password: "",
   });
   const [isLoading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -63,12 +65,12 @@ const Login = () => {
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const { email, password } = formData;
-    if (email === "" || password === "" || isLoading) return;
+    const { email } = formData;
+    if (email === "" || isLoading) return;
     try {
       setLoading(true);
-      await signInWithEmailAndPassword(auth, email, password);
-      navigate("/");
+      await sendPasswordResetEmail(auth, email);
+      navigate("/login");
     } catch (e) {
       if (e instanceof FirebaseError) {
         console.log("FirebaseError > ", e);
@@ -90,27 +92,18 @@ const Login = () => {
           value={formData.email}
           onChange={onChange}
         />
-        <Input
-          name="password"
-          placeholder="Password"
-          type="password"
-          value={formData.password}
-          onChange={onChange}
-        />
-        <Input type="submit" value={isLoading ? "Loading..." : "Login"} />
+        <Input type="submit" value={isLoading ? "Loading..." : "Send email"} />
       </Form>
       {error !== "" ? <Error>{error}</Error> : null}
+      <Switcher>
+        Already have an account? <Link to="/login">Log in &rarr;</Link>
+      </Switcher>
       <Switcher>
         Don't have an account?{" "}
         <Link to="/create-acount">Create one &rarr;</Link>
       </Switcher>
-      <Switcher>
-        Forgot your password?{" "}
-        <Link to="/find-acount-password">Find password? &rarr;</Link>
-      </Switcher>
-      <GithubButton />
     </Wrapper>
   );
 };
 
-export default Login;
+export default FindAccountPassword;
